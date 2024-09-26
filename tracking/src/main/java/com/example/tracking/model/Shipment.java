@@ -1,4 +1,4 @@
-package com.example.tracking;
+package com.example.tracking.model;
 
 import java.util.List;
 
