@@ -1,64 +1,48 @@
 package com.example.tracking.controller;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.tracking.model.Shipment;
+import com.example.tracking.service.ShipmentService;
 
 @RestController
+@RequestMapping("/shipments")
 public class ShipmentController {
-    private List<Shipment> shipments = new ArrayList<>();
+    @Autowired
+    private ShipmentService shipmentService;
 
-    public ShipmentController() {
-        // Create some statuses.
-        Status status1 = new Status(1, "cancelled");
-        Status status2 = new Status(2, "delivered");
-        Status status3 = new Status(3, "pending");
-        // Create dummy categories.
-        Category category1 = new Category(1, "bird food");
-        Category category2 = new Category(2, "cat food");
-        Category category3 = new Category(3, "dog food");
-        // Create dummy products.
-        Product product1 = new Product(1, "seeds", category1);
-        Product product2 = new Product(2, "cat kibble", category2);
-        Product product3 = new Product(3, "dog kibble", category3);
-        // Initialise the list of shipments with some data.
-        shipments.add(new Shipment(
-                1,
-                Arrays.asList(
-                        product1,
-                        product1,
-                        product1),
-                status1));
-        shipments.add(new Shipment(
-                2,
-                Arrays.asList(
-                        product1,
-                        product2,
-                        product3),
-                status2));
-        shipments.add(new Shipment(
-                3,
-                Arrays.asList(
-                        product1),
-                status3));
+    @GetMapping
+    public List<Shipment> getAllShipments() {
+        return shipmentService.getAllShipments();
     }
 
-    @GetMapping("/shipments")
-    public List<Shipment> getShipments() {
-        return shipments;
+    @GetMapping("/{id}")
+    public Optional<Shipment> getShipmentById(@PathVariable Long id) {
+        return shipmentService.getShipmentById(id);
     }
 
-    @GetMapping("/shipments/{id}")
-    public Shipment getShipmentById(@PathVariable int id) {
-        for (Shipment shipment : shipments) {
-            if (shipment.getId() == id) {
-                return shipment;
-            }
-        }
-        return null;
+    @PostMapping
+    public Shipment createShipment(@Validated @RequestBody Shipment shipment) {
+        return shipmentService.createShipment(shipment);
+    }
+
+    @PutMapping("/{id}")
+    public Shipment updateShipment(@PathVariable Long id, @Validated @RequestBody Shipment shipment) {
+        return shipmentService.updateShipment(id, shipment);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteShipment(@PathVariable Long id) {
+        shipmentService.deleteShipment(id);
     }
 }

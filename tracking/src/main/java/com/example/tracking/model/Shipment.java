@@ -1,31 +1,78 @@
 package com.example.tracking.model;
 
-import java.util.List;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 
+@Entity
+@Table(name = "shipment")
 public class Shipment {
-    private int id;
-    private List<Product> products;
-    private Status status;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
 
-    public Shipment(
-            int id,
-            List<Product> products,
-            Status status) {
-        this.id = id;
-        this.products = products;
-        this.status = status;
-    }
+    @NotBlank(message = "Product is mandatory.")
+    @Column(name = "product")
+    private String product;
+
+    @NotBlank(message = "Status is mandatory.")
+    @Pattern(regexp = "^(cancelled|delivered|pending)$", message = "Status must be either \"cancelled\", \"delivered\" or \"pending\".")
+    @Column(name = "status")
+    private String status;
+
+    @NotBlank(message = "Address is mandatory.")
+    @Column(name = "address")
+    private String address;
+
+    @NotBlank(message = "Recipient is mandatory.")
+    @Column(name = "recipient")
+    private String recipient;
 
     // Getters.
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public List<Product> getProducts() {
-        return products;
+    public String getProduct() {
+        return product;
     }
 
-    public Status getStatus() {
+    public String getStatus() {
         return status;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public String getRecipient() {
+        return recipient;
+    }
+
+    // Setters.
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setProduct(String product) {
+        this.product = product;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public void setRecipient(String recipient) {
+        this.recipient = recipient;
     }
 }
