@@ -2,7 +2,13 @@ package com.example.tracking.controller;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.IanaLinkRelations;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -26,7 +32,15 @@ public class ShipmentController {
     @GetMapping
     public ResponseEntity<Object> getAllShipments() {
         List<Shipment> shipments = shipmentService.getAllShipments();
-        return ResponseEntity.ok(shipments);
+        ShipmentController controller = methodOn(ShipmentController.class);
+        List<EntityModel<Shipment>> shipmentList = shipments.stream().map(shipment -> {
+            EntityModel<Shipment> model = EntityModel.of(shipment);
+            model.add(linkTo(controller.getShipmentById(shipment.getId())).withSelfRel());
+            return model;
+        }).collect(Collectors.toList());
+        CollectionModel<EntityModel<Shipment>> model = CollectionModel.of(shipmentList);
+        model.add(linkTo(controller.getAllShipments()).withSelfRel());
+        return ResponseEntity.ok(model);
     }
 
     @GetMapping("/{id}")
@@ -37,7 +51,11 @@ public class ShipmentController {
                     .status(HttpStatus.NOT_FOUND)
                     .body("Shipment " + id + " does not exist.");
         }
-        return ResponseEntity.ok(shipment);
+        ShipmentController controller = methodOn(ShipmentController.class);
+        EntityModel<Optional<Shipment>> model = EntityModel.of(shipment);
+        model.add(linkTo(controller.getShipmentById(id)).withSelfRel());
+        model.add(linkTo(controller.getAllShipments()).withRel(IanaLinkRelations.COLLECTION));
+        return ResponseEntity.ok(model);
     }
 
     @PostMapping
