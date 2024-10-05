@@ -1,0 +1,9 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:oracle:thin:@y644ubcuum4zxi5e_tp?TNS_ADMIN=/app/wallet
+    ports:
+      - "8080:8080"
